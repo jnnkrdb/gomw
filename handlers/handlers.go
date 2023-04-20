@@ -10,7 +10,7 @@ type HttpFunctionSet []HttpFunction
 
 type HttpFunction struct {
 	Pattern     string
-	Function    func(http.ResponseWriter, *http.Request)
+	MainHandler http.Handler
 	Middlewares mw.MiddleWareChain
 }
 
@@ -18,7 +18,7 @@ type HttpFunction struct {
 func GetHandler(hfs []HttpFunction) http.Handler {
 	var h = http.NewServeMux()
 	for i := range hfs {
-		h.Handle(hfs[i].Pattern, hfs[i].Middlewares.ThenFunc(hfs[i].Function))
+		h.Handle(hfs[i].Pattern, hfs[i].Middlewares.Then(hfs[i].MainHandler))
 	}
 	return h
 }
